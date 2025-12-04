@@ -6,8 +6,8 @@ import torch
 from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-RESULTS_DIR = BASE_DIR / "results"
+ROOT_DIR = Path(__file__).resolve().parents[2]
+RESULTS_DIR = ROOT_DIR / "results"
 
 CLIP_MODEL = "openai/clip-vit-base-patch32"
 
@@ -62,7 +62,7 @@ def main():
 
         rows.append({"case": case, "mIoU": miou, "clip_score": clip_score})
 
-    output_csv = BASE_DIR / "results" / "metrics_summary.csv"
+    output_csv = RESULTS_DIR / "metrics_summary.csv"
     with open(output_csv, "w", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=["case", "mIoU", "clip_score"])
         writer.writeheader()

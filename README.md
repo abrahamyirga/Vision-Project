@@ -23,18 +23,18 @@ python3 -m pip install -r requirements.txt
 ```
 bash download_models.sh
 ```
-2. Run the mask-blended inference pipeline:
+2. Run the mask-blended inference pipeline (this also runs metrics):
 ```
-python3 submission/code/project_run.py
+bash run_pipeline.sh
 ```
-3. Review the outputs in `results/`. Each example produces `*_baseline.png` and `*_ours.png` for comparison.
-4. After generating the PNGs, run the metric evaluation script:
-```
-python3 submission/code/evaluate_metrics.py
-```
-The script writes `results/metrics_summary.csv` and prints mIoU/CLIP scores for each case.
+3. Review the outputs in `results/`. Each example produces `*_baseline.png` and `*_ours.png` for comparison. The metrics script writes `results/metrics_summary.csv` and prints mIoU/CLIP scores for each case.
 
 _Note: On CPU this script is very slow; use a CUDA-enabled machine or Colab for reasonable runtimes (5–10 minutes per image otherwise)._  
+
+### Running in Colab
+1. Clone this repository into your Colab workspace.
+2. Run `bash download_models.sh` to fetch the SAM checkpoint.
+3. Execute `bash run_pipeline.sh` from the repo root to install dependencies, generate edits, and compute metrics.
 
 ## Deliverables
 - Proposal: see `submission/proposal/proposal.pdf`.  

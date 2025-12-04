@@ -6,10 +6,10 @@ from pathlib import Path
 from diffusers import StableDiffusionInstructPix2PixPipeline, EulerAncestralDiscreteScheduler
 from segment_anything import SamPredictor, sam_model_registry
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data" / "images"
-MODEL_DIR = BASE_DIR / "models"
-RESULTS_DIR = BASE_DIR / "results"
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = ROOT_DIR / "data" / "images"
+MODEL_DIR = ROOT_DIR / "models"
+RESULTS_DIR = ROOT_DIR / "results"
 
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 

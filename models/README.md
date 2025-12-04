@@ -5,5 +5,3 @@ The file is not stored in git to keep the repository lightweight. Download it be
 ```
 bash download_models.sh
 ```
-
-The script will place the checkpoint here and mirror it into `Notebook/models/` for the Colab workflow.

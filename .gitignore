@@ -1,7 +1,5 @@
 models/*.pth
-Notebook/models/*.pth
 results/
-Notebook/results/
 submission/report/*.aux
 submission/report/*.log
 submission/report/*.out
