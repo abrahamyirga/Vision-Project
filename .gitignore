@@ -1,9 +1,9 @@
 models/*.pth
-results/
 __pycache__/
 */__pycache__/
 .pytest_cache/
 .DS_Store
+*.zip
 submission/report/*.aux
 submission/report/*.log
 submission/report/*.out
