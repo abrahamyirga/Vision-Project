@@ -31,6 +31,7 @@ The script encodes three canonical use cases: change a shirt color, turn a dog i
 - Accelerator: NVIDIA A100 (40 GB)
 - Command: `bash run_pipeline.sh` (installs deps, runs inference, then metrics)
 - Runtime: ~2 minutes total after checkpoint downloads
+ - Code: https://github.com/abrahamyirga/Vision-Project (submission bundle mirrors the repo)
 
 ## Quantitative Metrics
 Automatic metrics were computed with `submission/code/evaluate_metrics.py` (CLIP for instruction fidelity and mIoU for spatial precision between the change map and SAM mask). Results:

@@ -109,6 +109,8 @@ The README documents dependency installation, points to \texttt{requirements.txt
 
 To regenerate the final figures, rerun the pipeline on a GPU machine; the outputs will land back in \texttt{results/} with predictable filenames (\texttt{case\_*}). The README also reminds the user to download the SAM checkpoint from the official release page before running the script, ensuring no missing dependencies once the environment is recreated on another computer.
 
+\noindent\textbf{Code repository:} \url{https://github.com/abrahamyirga/Vision-Project}
+
 \section{Model Versions and Licenses}
 The pipeline depends on public checkpoints: `timbrooks/instruct-pix2pix` from Hugging Face and `sam\_vit\_h\_4b8939.pth` from Facebook Research. Both models are released under permissive licenses (MIT-style for InstructPix2Pix and Apache 2.0 for SAM), so the code and results can be shared with attribution. We log the exact versions in the README to avoid drift and ensure anyone reopening the project loads the same weights.
 
