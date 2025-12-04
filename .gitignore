@@ -1,5 +1,7 @@
 models/*.pth
 results/
+__pycache__/
+*/__pycache__/
 submission/report/*.aux
 submission/report/*.log
 submission/report/*.out

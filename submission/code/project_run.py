@@ -5,6 +5,7 @@ import PIL.Image
 from pathlib import Path
 from diffusers import StableDiffusionInstructPix2PixPipeline, EulerAncestralDiscreteScheduler
 from segment_anything import SamPredictor, sam_model_registry
+import random
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT_DIR / "data" / "images"
@@ -19,6 +20,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 SAM_CHECKPOINT = MODEL_DIR / "sam_vit_h_4b8939.pth"
 MODEL_ID = "timbrooks/instruct-pix2pix"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEFAULT_SEED = 1337
 
 print(f"Running on {DEVICE}...")
 
@@ -55,7 +57,7 @@ def get_mask_from_sam(image_path, point_coords):
     return masks[0]
 
 # ================= MAIN PIPELINE =================
-def run_masked_edit(image_path, prompt, click_x, click_y, output_name):
+def run_masked_edit(image_path, prompt, click_x, click_y, output_name, seed=None):
     original_pil = PIL.Image.open(image_path).convert("RGB")
     original_pil = original_pil.resize((512, 512))
 
@@ -63,15 +65,25 @@ def run_masked_edit(image_path, prompt, click_x, click_y, output_name):
     mask_np = get_mask_from_sam(image_path, [click_x, click_y])
 
     mask_pil = PIL.Image.fromarray(mask_np)
-    mask_pil = mask_pil.resize((512, 512))
-    mask_tensor = torch.from_numpy(np.array(mask_pil)).float().to(DEVICE) / 255.0
+    mask_pil = mask_pil.resize((512, 512), resample=PIL.Image.NEAREST)
+    mask_arr = np.array(mask_pil).astype(np.float32) / 255.0  # normalize to [0,1] for blending
 
-    print("Running Baseline...")
-    res_baseline = pipe(prompt, image=original_pil, num_inference_steps=20, image_guidance_scale=1.5).images[0]
+    if seed is None:
+        seed = DEFAULT_SEED
+    generator = torch.Generator(device=DEVICE).manual_seed(seed)
+
+    print(f"Running Baseline (seed={seed})...")
+    res_baseline = pipe(
+        prompt,
+        image=original_pil,
+        num_inference_steps=20,
+        image_guidance_scale=1.5,
+        generator=generator,
+    ).images[0]
 
     res_np = np.array(res_baseline)
     orig_np = np.array(original_pil)
-    mask_3ch = np.stack([np.array(mask_pil)] * 3, axis=-1)
+    mask_3ch = np.stack([mask_arr] * 3, axis=-1)
 
     final_np = res_np * mask_3ch + orig_np * (1 - mask_3ch)
     final_image = PIL.Image.fromarray(final_np.astype(np.uint8))
@@ -85,11 +97,11 @@ def run_masked_edit(image_path, prompt, click_x, click_y, output_name):
 # ================= EXECUTION =================
 if __name__ == "__main__":
     examples = [
-        ("man_shirt.jpg", "Change the shirt to bright red leather", 270, 260, "case_man_shirt"),
-        ("dog_grass.jpg", "Turn the dog into a playful robot", 260, 250, "case_dog_robot"),
-        ("car_street.jpg", "Make the car glow like a futuristic hovercraft", 280, 330, "case_car_hover"),
+        ("man_shirt.jpg", "Change the shirt to bright red leather", 270, 260, "case_man_shirt", DEFAULT_SEED),
+        ("dog_grass.jpg", "Turn the dog into a playful robot", 260, 250, "case_dog_robot", DEFAULT_SEED + 1),
+        ("car_street.jpg", "Make the car glow like a futuristic hovercraft", 280, 330, "case_car_hover", DEFAULT_SEED + 2),
     ]
 
-    for image_name, prompt, x, y, name in examples:
+    for image_name, prompt, x, y, name, seed in examples:
         image_path = DATA_DIR / image_name
-        run_masked_edit(str(image_path), prompt, x, y, name)
+        run_masked_edit(str(image_path), prompt, x, y, name, seed=seed)
