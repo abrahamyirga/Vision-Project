@@ -14,8 +14,8 @@ RESULTS_DIR = ROOT_DIR / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ================= CONFIGURATION =================
-# You must download a SAM checkpoint manually if you haven't.
-# Download 'sam_vit_h_4b8939.pth' from: https://github.com/facebookresearch/segment-anything
+# SAM checkpoint must be downloaded manually:
+# https://github.com/facebookresearch/segment-anything
 SAM_CHECKPOINT = MODEL_DIR / "sam_vit_h_4b8939.pth"
 MODEL_ID = "timbrooks/instruct-pix2pix"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -32,14 +32,13 @@ pipe.to(DEVICE)
 pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
 
 print("Loading SAM (Segment Anything)...")
-# Note: You need to download the weight file first!
 try:
     sam = sam_model_registry["vit_h"](checkpoint=SAM_CHECKPOINT)
     sam.to(device=DEVICE)
     predictor = SamPredictor(sam)
 except Exception as e:
     print(f"Error loading SAM: {e}")
-    print("Make sure you downloaded 'sam_vit_h_4b8939.pth' and put it in this folder!")
+    print("SAM checkpoint missing; expected 'sam_vit_h_4b8939.pth' in the models directory.")
     exit()
 
 # ================= HELPER FUNCTIONS =================
