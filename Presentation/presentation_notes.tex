@@ -1,0 +1,83 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+\setlist[itemize]{leftmargin=1.2em}
+\begin{document}
+
+\begin{center}
+\Large Mask-Guided, Training-Free Spatial Control for InstructPix2Pix\\[4pt]
+\normalsize 10-minute presentation notes (CS 5404)
+\end{center}
+
+\section*{Talk Flow (10 min)}
+\begin{itemize}
+  \item Motivation \& problem (1.5 min)
+  \item Method: Mask-Blended Inference (2 min)
+  \item Implementation details (1.5 min)
+  \item Experiments \& results (3 min)
+  \item Discussion, limitations, next steps (1.5 min)
+  \item Wrap-up \& Q\&A buffer (0.5 min)
+\end{itemize}
+
+\section*{Motivation (1.5 min)}
+\begin{itemize}
+  \item Instruction-following editors (InstructPix2Pix) can bleed edits into background; need spatial control.
+  \item Training mask-aware diffusion is heavy; goal is training-free spatial fidelity using existing checkpoints.
+  \item Chosen base papers: InstructPix2Pix (Brooks et al. 2023) + Segment Anything (Kirillov et al. 2023).
+\end{itemize}
+
+\section*{Method: Mask-Blended Inference (2 min)}
+\begin{itemize}
+  \item Pipeline: SAM click $\rightarrow$ binary mask; run InstructPix2Pix; blend output with original using mask (pixel space).
+  \item Formula: $\tilde{y} = M \odot y_{\text{baseline}} + (1-M) \odot x_0$.
+  \item Deterministic guidance: no weight changes, just post-process blending; seeds fixed for reproducibility.
+  \item Mask resize with nearest neighbor to preserve crisp boundaries; normalization to [0,1] avoids overflow.
+\end{itemize}
+
+\section*{Implementation (1.5 min)}
+\begin{itemize}
+  \item Code: \texttt{submission/code/project\_run.py} (inference), \texttt{evaluate\_metrics.py} (mIoU, CLIP).
+  \item Data: three images in \texttt{data/images/} (shirted woman, dog, car); checkpoints via \texttt{download\_models.sh}.
+  \item Execution: \texttt{bash run\_pipeline.sh} (installs, runs inference, then metrics). Optional \texttt{clean\_run.sh} to reset.
+  \item Environment used for final run: Colab, NVIDIA A100 (40 GB), ~2 minutes after downloads.
+\end{itemize}
+
+\section*{Experiments \& Results (3 min)}
+\begin{itemize}
+  \item Cases (Table in report): shirt recolor (woman), dog to robot, car to hovercraft; 20 denoising steps, guidance 1.5.
+  \item Quantitative (from Colab run):
+    \begin{itemize}
+      \item Shirt $\rightarrow$ red leather: mIoU 0.183, CLIP 0.206
+      \item Dog $\rightarrow$ playful robot: mIoU 0.265, CLIP 0.261
+      \item Car $\rightarrow$ glowing hovercraft: mIoU 0.173, CLIP 0.221
+    \end{itemize}
+  \item Interpretation: dog scores highest (clear silhouette); car shows spatial containment but semantic gap from ambitious styling.
+  \item Qualitative: show rows of (original, mask, baseline, ours). Note background preservation vs. baseline bleed.
+\end{itemize}
+
+\section*{Discussion, Limitations, Next Steps (1.5 min)}
+\begin{itemize}
+  \item Strengths: training-free, quick to reproduce, deterministic seeds, minimal code changes.
+  \item Limitations: blending after sampling (does not steer denoising trajectory); depends on SAM mask quality; heavy checkpoints.
+  \item Next steps: explore latent/attention masking, mask dilations/soft edges, optional human study on spatial fidelity, batch more cases.
+\end{itemize}
+
+\section*{Reproducibility Notes}
+\begin{itemize}
+  \item Commands: \texttt{bash download\_models.sh}; \texttt{bash run\_pipeline.sh}.
+  \item Required assets: SAM checkpoint in \texttt{models/sam\_vit\_h\_4b8939.pth}; sample images already in repo.
+  \item Results/figures embedded in report under \texttt{submission/report/figures/}.
+  \item Code repo: \url{https://github.com/abrahamyirga/Vision-Project}
+\end{itemize}
+
+\section*{Q\&A Prompts}
+\begin{itemize}
+  \item If asked about compute: A100 run; ~2 min for three cases after downloads.
+  \item If asked about metrics: automatic mIoU/CLIP provided; human study planned but not executed.
+  \item If asked about training: none performed; method is inference-time only.
+\end{itemize}
+
+\end{document}

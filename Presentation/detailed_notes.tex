@@ -1,0 +1,82 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+\setlist[itemize]{leftmargin=1.2em}
+\begin{document}
+
+\begin{center}
+\Large Mask-Guided, Training-Free Spatial Control for InstructPix2Pix\\[4pt]
+\normalsize Detailed presentation notes (10-minute talk)
+\end{center}
+
+\section*{1) Problem \& Motivation (use analogies)}
+\begin{itemize}
+  \item Pain point: Instruction-following editors (InstructPix2Pix) can repaint the whole scene. Asking ``make the jacket red'' can also stain the background.
+  \item Analogy: Spray-painting without painter's tape—you color the table too. We need painter's tape for diffusion: a mask.
+  \item Constraint: No time/compute to retrain a mask-aware diffusion model. Need a training-free fix.
+\end{itemize}
+
+\section*{2) Base Papers (what we stand on)}
+\begin{itemize}
+  \item InstructPix2Pix (Brooks et al., CVPR'23): learns text-conditioned edits via synthetic (before/after + instruction) pairs. Follows language well; lacks ``where'' control.
+  \item Segment Anything (SAM, Kirillov et al., ICCV'23): promptable segmentation (click/box) for crisp masks on almost any object. Analogy: universal scissors that cut whatever you point at.
+\end{itemize}
+
+\section*{3) Our Idea: Mask-Blended Inference (training-free)}
+\begin{itemize}
+  \item Key move: do not touch weights. Run InstructPix2Pix normally, then blend its output with the original using the SAM mask.
+  \item Equation: $\tilde{y} = M \odot y_{\text{baseline}} + (1-M) \odot x_0$, where $M$ is the mask (1 inside, 0 outside).
+  \item Analogy: Painter's tape + airbrush; tape protects background, only exposed area gets painted.
+  \item Why post-hoc blending works here: cheap (no training), deterministic (fixed seeds), fast (reuse public checkpoints).
+\end{itemize}
+
+\section*{4) Implementation Highlights (code map)}
+\begin{itemize}
+  \item Entrypoint: \texttt{submission/code/project\_run.py} — loads SAM (\texttt{models/sam\_vit\_h\_4b8939.pth}), InstructPix2Pix (\texttt{timbrooks/instruct-pix2pix}); resizes to 512$\times$512; 20 steps; seeds fixed per case; saves original, mask, baseline, blended.
+  \item Mask handling: nearest-neighbor resize; normalized to [0,1] to avoid overflow.
+  \item Metrics: \texttt{submission/code/evaluate\_metrics.py} — mIoU (spatial precision via change map vs. mask), CLIP (instruction fidelity).
+  \item Runner scripts: \texttt{download\_models.sh} (fetch SAM), \texttt{run\_pipeline.sh} (deps + inference + metrics), \texttt{clean\_run.sh} (optional reset).
+  \item Data: \texttt{data/images/} — shirted woman, dog on grass, car on street.
+\end{itemize}
+
+\section*{5) Experiments (Colab A100 run)}
+\begin{itemize}
+  \item Setup: Colab, A100 40 GB, $\sim$2 min total after downloads.
+  \item Cases (20 steps, guidance 1.5): Shirt $\rightarrow$ red leather; Dog $\rightarrow$ playful robot; Car $\rightarrow$ glowing hovercraft.
+  \item Quantitative (mIoU, CLIP):
+    \begin{itemize}
+      \item Shirt: 0.183, 0.206
+      \item Dog: 0.265, 0.261
+      \item Car: 0.173, 0.221
+    \end{itemize}
+  \item Interpretation: Dog scores highest (clear silhouette); car shows spatial containment but a more ambitious semantic change.
+  \item Qualitative: show rows (original | mask | baseline | blended). Note background preservation vs. baseline bleed.
+\end{itemize}
+
+\section*{6) Strengths, Limitations, Next Steps}
+\begin{itemize}
+  \item Strengths: training-free; uses public checkpoints; deterministic seeds; simple blend enforces spatial control.
+  \item Limitations: post-hoc (does not steer the denoising trajectory); depends on SAM quality; heavy checkpoints.
+  \item Next steps: attention/latent masking to guide trajectory; mask dilations/soft edges; more cases; optional human study on spatial fidelity.
+\end{itemize}
+
+\section*{7) Reproducibility \& Submission}
+\begin{itemize}
+  \item Commands: \texttt{bash download\_models.sh}; \texttt{bash run\_pipeline.sh}.
+  \item Assets: SAM checkpoint in \texttt{models/sam\_vit\_h\_4b8939.pth}; sample images already in repo; results in \texttt{results/} and \texttt{submission/report/figures/}.
+  \item Report: CVPR format (6–9 pages); code separate; GitHub link: \url{https://github.com/abrahamyirga/Vision-Project}
+\end{itemize}
+
+\section*{8) Q\&A Cheat Sheet}
+\begin{itemize}
+  \item Why not train a mask-aware model? Time/compute; training-free gets 80/20 benefit fast.
+  \item Does blending lose semantics? Inside mask we keep edited pixels; CLIP scores show instruction alignment; baseline preserved outside.
+  \item How robust is SAM? Good on clear objects; fails if click misses or scene is cluttered—could add multi-click or dilation.
+  \item Can this run on CPU? Yes, but slow; recommend GPU/Colab.
+  \item Future work? Attention/latent masking, softer masks, more cases, human study.
+\end{itemize}
+
+\end{document}
