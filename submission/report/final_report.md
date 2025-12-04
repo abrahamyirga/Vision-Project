@@ -20,7 +20,7 @@ This pipeline can be described as training-free spatial conditioning: no additio
 # Implementation Details
 - Dependencies: `torch`, `diffusers`, `segment-anything`, `opencv-python`.  
 - `project_run.py` sets up SAM and InstructPix2Pix, resizes inputs to 512×512, uses 20 denoising steps, and stores the intermediate `baseline` and final `mask-blended` outputs.  
-- SAM weights (`sam_vit_h_4b8939.pth`) and a curated set of three sample images (a man, a dog, and a car) are placed under `models/` and `data/images/` respectively.  
+- SAM weights (`sam_vit_h_4b8939.pth`) and a curated set of three sample images (a woman, a dog, and a car) are placed under `models/` and `data/images/` respectively.  
 - Outputs live in `results/` so the submission folder stays clean.
 
 # Evaluation Plan and Results
@@ -47,7 +47,7 @@ Higher mIoU indicates edits remained within the SAM mask; CLIP reflects prompt a
 ## Qualitative Results
 Representative outputs (original, mask, baseline, mask-blended) are stored under `results/` and included here for documentation:
 
-- Shirt recolor: `results/case_man_shirt_{original,mask,baseline,ours}.png`
+- Shirt recolor: `results/case_woman_shirt_{original,mask,baseline,ours}.png`
 - Dog to robot: `results/case_dog_robot_{original,mask,baseline,ours}.png`
 - Car restyle: `results/case_car_hover_{original,mask,baseline,ours}.png`
 

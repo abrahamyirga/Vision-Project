@@ -4,7 +4,7 @@ This repository hosts the submission-ready materials for CS 5404's final project
 
 ## Repository Layout
 - `submission/` – final deliverables: proposal (`submission/proposal/proposal.pdf`), report (`submission/report/final_report.{md,pdf}`), and runnable code (`submission/code/project_run.py`).
-- `data/images/` – curated test images (shirted man, dog on grass, futuristic car) used by the scripted examples.
+- `data/images/` – curated test images (shirted woman, dog on grass, futuristic car) used by the scripted examples.
 - `models/` – SAM checkpoint `sam_vit_h_4b8939.pth` (downloaded; not tracked in git). Fetch via `bash download_models.sh`.
 - `results/` – auto-created by the pipeline; stores the original image, SAM mask, baseline InstructPix2Pix edit, and mask-blended edit for each case.
 - `docs/` – assignment instructions and supporting text extracted from the provided PDFs.

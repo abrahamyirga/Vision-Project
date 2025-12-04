@@ -95,7 +95,7 @@ def run_masked_edit(image_path, prompt, click_x, click_y, output_name, seed=None
 # ================= EXECUTION =================
 if __name__ == "__main__":
     examples = [
-        ("man_shirt.jpg", "Change the shirt to bright red leather", 270, 260, "case_man_shirt", DEFAULT_SEED),
+        ("woman_shirt.jpg", "Change the shirt to bright red leather", 270, 260, "case_woman_shirt", DEFAULT_SEED),
         ("dog_grass.jpg", "Turn the dog into a playful robot", 260, 250, "case_dog_robot", DEFAULT_SEED + 1),
         ("car_street.jpg", "Make the car glow like a futuristic hovercraft", 280, 330, "case_car_hover", DEFAULT_SEED + 2),
     ]

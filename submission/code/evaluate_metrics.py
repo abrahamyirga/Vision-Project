@@ -12,7 +12,7 @@ RESULTS_DIR = ROOT_DIR / "results"
 CLIP_MODEL = "openai/clip-vit-base-patch32"
 
 CASE_INSTRUCTIONS = {
-    "case_man_shirt": "Change the shirt to bright red leather",
+    "case_woman_shirt": "Change the shirt to bright red leather",
     "case_dog_robot": "Turn the dog into a playful robot",
     "case_car_hover": "Make the car glow like a futuristic hovercraft",
 }
