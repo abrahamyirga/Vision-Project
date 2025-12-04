@@ -2,6 +2,8 @@ models/*.pth
 results/
 __pycache__/
 */__pycache__/
+.pytest_cache/
+.DS_Store
 submission/report/*.aux
 submission/report/*.log
 submission/report/*.out

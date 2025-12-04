@@ -5,7 +5,6 @@ import PIL.Image
 from pathlib import Path
 from diffusers import StableDiffusionInstructPix2PixPipeline, EulerAncestralDiscreteScheduler
 from segment_anything import SamPredictor, sam_model_registry
-import random
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT_DIR / "data" / "images"
