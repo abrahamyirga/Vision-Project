@@ -212,12 +212,12 @@ The following commands capture the key steps from environment setup through resu
 \centering
 \caption{Command reference for the mask-blended pipeline.}
 \label{tab:commands}
-\begin{tabular}{@{}ll@{}}
+\begin{tabular}{@{}p{0.28\linewidth}p{0.64\linewidth}@{}}
 \toprule
 Purpose & Command \\
 \midrule
-Install diffusion stack & \texttt{python3 -m pip install torch torchvision torchaudio diffusers transformers accelerate scipy safetensors opencv-python segment-anything matplotlib} \\
-Run inference script & \texttt{python3 submission/code/project\_run.py} \\
+Install dependencies & \texttt{python3 -m pip install -r requirements.txt} \\
+Run full pipeline & \texttt{bash run\_pipeline.sh} \\
 Clean results & \texttt{rm results/case\_*\_*.png} \\
 Inspect latest outputs & \texttt{ls -1 results/case\_*\_ours.png} \\
 \bottomrule
